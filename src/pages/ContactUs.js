@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import "../css/ContactUs.css";
 import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
+import axios from "axios";
+// import "../../service.js";
+// import { nodemailer } from "nodemailer-react";
 
 const ContactUs = () => {
   const [status, setStatus] = useState("Send");
@@ -11,44 +14,69 @@ const ContactUs = () => {
     e.preventDefault();
     setStatus("Sending...");
     const { email, message } = e.target.elements;
-    console.log(message.value);
-    let details = {
+    let data = {
       email: email.value,
       message: message.value,
     };
-    // emailjs.send('service_7ci2knu','template_2wfehm9',details,'G4AetaCMjy7UzzsSu')
-    emailjs
-      .send("service_d2u4thw", "template_kfxtu2c", details, "qBy9YobgcYsGoCaPF")
-      .then(
-        (response) => {
-          document.getElementById("contact-us-form").reset();
-          setStatus("Send");
-          setResponse("Success");
-          console.log("SUCCESS", response);
-        },
-        (error) => {
-          setResponse("Failed");
-          console.log("FAILED", error);
-        }
-      );
-
-    emailjs.send(
-      "service_d2u4thw",
-      "template_kfxtu2c",
-      details,
-      "qBy9YobgcYsGoCaPF"
-    );
+    axios({
+      method: "POST",
+      url: "http://localhost:5000/send",
+      data: data,
+    }).then((res, error) => {
+      // console.log(res);
+      if (res.data === "success") {
+        document.getElementById("contact-us-form").reset();
+        setStatus("Send");
+        setResponse("Success");
+        // console.log("SUCCESS", res);
+      } else {
+        setResponse("Failed");
+        // console.log("FAILED", error);
+      }
+    });
   };
+  // const sendEmail = async (e) => {
+  //   e.preventDefault();
+  //   setStatus("Sending...");
+  //   const { email, message } = e.target.elements;
+  //   console.log(message.value);
+  //   let details = {
+  //     email: email.value,
+  //     message: message.value,
+  //   };
+  //   // emailjs.send('service_7ci2knu','template_2wfehm9',details,'G4AetaCMjy7UzzsSu')
+  //   emailjs
+  //     .send("service_d2u4thw", "template_kfxtu2c", details, "qBy9YobgcYsGoCaPF")
+  //     .then(
+  //       (response) => {
+  //         document.getElementById("contact-us-form").reset();
+  //         setStatus("Send");
+  //         setResponse("Success");
+  //         console.log("SUCCESS", response);
+  //       },
+  //       (error) => {
+  //         setResponse("Failed");
+  //         console.log("FAILED", error);
+  //       }
+  //     );
+
+  //   emailjs.send(
+  //     "service_d2u4thw",
+  //     "template_kfxtu2c",
+  //     details,
+  //     "qBy9YobgcYsGoCaPF"
+  //   );
+  // };
 
   const renderAlert = () => {
     if (response === "Success") {
       return (
-        <div class="alert alert-success alert-dismissible d-flex align-items-center fade show">
-          <strong class="mx-2">Success!</strong> Your message has been sent
+        <div className="alert alert-success alert-dismissible d-flex align-items-center fade show">
+          <strong className="mx-2">Success!</strong> Your message has been sent
           successfully.
           <button
             type="button"
-            class="close"
+            className="close"
             data-dismiss="alert"
             aria-label="Close"
             onClick={(e) => {
@@ -61,12 +89,12 @@ const ContactUs = () => {
       );
     } else if (response === "Failed") {
       return (
-        <div class="alert alert-danger alert-dismissible d-flex align-items-center fade show">
-          <strong class="mx-2">Error!</strong> A problem has been occurred while
-          submitting your data.
+        <div className="alert alert-danger alert-dismissible d-flex align-items-center fade show">
+          <strong className="mx-2">Error!</strong> A problem has been occurred
+          while submitting your data.
           <button
             type="button"
-            class="close"
+            className="close"
             data-dismiss="alert"
             aria-label="Close"
             onClick={(e) => {
